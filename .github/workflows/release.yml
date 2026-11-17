@@ -19,27 +19,39 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
+      - name: Get current tag
+        id: before
+        run: echo "tag=$(git describe --tags --abbrev=0 2>/dev/null || echo none)" >> "$GITHUB_OUTPUT"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install semantic-release
-        run: npm install --save-dev semantic-release @semantic-release/git @semantic-release/changelog
+        run: npm install --save-dev semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/exec
 
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
         run: npx semantic-release
 
+      - name: Get new tag
+        id: after
+        run: echo "tag=$(git describe --tags --abbrev=0 2>/dev/null || echo none)" >> "$GITHUB_OUTPUT"
+
       - name: Install Nix
+        if: steps.before.outputs.tag != steps.after.outputs.tag
         uses: DeterminateSystems/nix-installer-action@main
 
       - name: Build binary with Nix
+        if: steps.before.outputs.tag != steps.after.outputs.tag
         run: nix build .#default
 
-      - name: Upload binary to latest release
+      - name: Upload binary to release
+        if: steps.before.outputs.tag != steps.after.outputs.tag
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.after.outputs.tag }}
           files: result/bin/opensubsonic-mpd
           draft: false

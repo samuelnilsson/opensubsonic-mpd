@@ -1,9 +1,31 @@
 {
   "branches": ["main"],
   "plugins": [
-    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          { "breaking": true, "release": "major" },
+          { "type": "feat", "release": "minor" },
+          { "type": "fix", "release": "patch" },
+          { "type": "perf", "release": "patch" },
+          { "type": "*", "release": "patch" }
+        ],
+        "parserOpts": {
+          "headerPattern": "^(\\w*)(?:\\((.*)\\))?!?: (.*)$",
+          "headerCorrespondence": ["type", "scope", "subject"],
+          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES", "BREAKING"]
+        }
+      }
+    ],
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "sed -i 's/version = \".*\"/version = \"${nextRelease.version}\"/' flake.nix"
+      }
+    ],
     [
       "@semantic-release/git",
       {
