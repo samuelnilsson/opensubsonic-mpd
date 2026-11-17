@@ -57,7 +57,7 @@ Version bump rules:
 | `feat`      | minor      |
 | `fix`       | patch      |
 | `perf`      | patch      |
-| `chore`, `docs`, `style`, `refactor`, `test`, `build`, `ci` | none (patch) |
+| `chore`, `docs`, `style`, `refactor`, `test`, `build`, `ci` | none |
 
 The config lives in `.releaserc.json`.
 
