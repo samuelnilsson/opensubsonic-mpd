@@ -1,0 +1,32 @@
+name: Build with Nix
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Check flake
+        run: nix flake check
+
+      - name: Build Go binary
+        run: nix build .#default
+
+      - name: Upload built binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: opensubsonic-mpd-${{ runner.os }}
+          path: result/bin/opensubsonic-mpd

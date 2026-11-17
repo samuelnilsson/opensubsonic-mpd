@@ -34,4 +34,7 @@ vendor/
 # direnv
 .direnv/
 
+# Node.js
+node_modules/
+
 
