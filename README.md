@@ -1,0 +1,38 @@
+# opensubsonic-mpd
+
+A headless music player that bridges any [OpenSubsonic](https://github.com/Mromani/opensubsonic) server with MPD clients via [libmpv](https://mpv.io/).
+
+## What it does
+
+`opensubsonic-mpd` acts as a drop-in MPD-compatible server. Any MPD client — can connect to it and control playback of music stored on your OpenSubsonic server. Playback is handled by MPV through libmpv, so you get high-quality audio without needing a graphical interface.
+
+In short: your OpenSubsonic library, played through any MPD client you like.
+
+## Why
+
+OpenSubsonic provides great remote music hosting, but its built-in web player is limited and many users prefer dedicated MPD clients. Rather than writing yet another UI, this project lets you use the clients you already love. It's lightweight, terminal-friendly, and fully scriptable via the standard MPD protocol.
+
+## Getting Started
+
+### Prerequisites
+
+- Go 1.22+
+- libmpv (development headers)
+
+### Building
+
+```bash
+go build ./...
+```
+
+### Running
+
+```bash
+opensubsonic-mpd --server <opensubsonic-url> --username <user> --password <pass>
+```
+
+The server starts listening on port `6600` by default. Connect your favourite MPD client and start playing.
+
+## License
+
+[MIT](LICENSE)
