@@ -16,6 +16,10 @@ In short: your OpenSubsonic library, played through any MPD client you like.
 
 OpenSubsonic provides great remote music hosting, but its built-in web player is limited and many users prefer dedicated MPD clients. Rather than writing yet another UI, this project lets you use the clients you already love. It's lightweight, terminal-friendly, and fully scriptable via the standard MPD protocol.
 
+## OpenSubsonic specification
+
+This project follows the [OpenSubsonic API specification](https://github.com/opensubsonic/opensubsonic.github.io) for all server communication.
+
 ## Getting Started
 
 ### Prerequisites
