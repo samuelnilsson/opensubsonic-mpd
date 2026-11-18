@@ -113,6 +113,10 @@ Examples:
 - `fix: handle missing server URL flag`
 - `ci: add GitHub Actions workflow for Nix build`
 
+### PR titles
+
+Since this repo uses squash merging, **PR titles must also follow the Conventional Commits format** (enforced by a CI check). The squash-merged commit — which becomes the official commit on `main` — takes the PR title, so it must be valid.
+
 ## Project overview
 
 `opensubsonic-mpd` is a headless music player that bridges an [OpenSubsonic](https://github.com/Mromani/opensubsonic) server with MPD clients via libmpv. The main entry point is `cmd/opensubsonic-mpd/main.go`.
