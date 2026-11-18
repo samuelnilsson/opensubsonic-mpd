@@ -38,6 +38,22 @@ When adding Go dependencies (i.e. when `go.mod` acquires entries and `go.sum` is
 4. Update `vendorHash` in `flake.nix` with that value
 5. Commit both `flake.nix` and the updated `flake.lock`
 
+## Formatting
+
+The project uses [`treefmt-nix`](https://github.com/nix-community/treefmt) for unified formatting across both Go and Nix files.
+
+```bash
+# Format all files (Go + Nix)
+nix fmt
+
+# Check formatting (runs automatically via `nix flake check` in CI)
+nix flake check
+```
+
+This runs:
+- **gofmt** — Go code formatting
+- **nixfmt** — Nix code formatting
+
 ## GitHub Actions
 
 A CI workflow builds the project with Nix on push and PR. No secrets or cache setup required for basic operation.
