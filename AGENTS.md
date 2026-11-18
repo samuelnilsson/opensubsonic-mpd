@@ -77,6 +77,15 @@ Version bump rules:
 
 The config lives in `.releaserc.json`.
 
+## Branching convention
+
+**Never commit directly to `main` — always use a PR.**
+
+1. Create a feature branch: `git checkout -b feat/<description>`
+2. Make changes and commit with conventional commit messages
+3. Push the branch and open a PR against `main`
+4. CI will run `nix flake check` (build + formatting) on the PR
+
 ## Conventional Commits
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) for all commit messages. Format:
