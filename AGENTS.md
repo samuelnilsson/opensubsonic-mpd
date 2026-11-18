@@ -120,3 +120,33 @@ Since this repo uses squash merging, **PR titles must also follow the Convention
 ## Project overview
 
 `opensubsonic-mpd` is a headless music player that bridges an [OpenSubsonic](https://github.com/Mromani/opensubsonic) server with MPD clients via libmpv. The main entry point is `cmd/opensubsonic-mpd/main.go`.
+
+## Testing conventions
+
+### Arrange, Act, Assert
+
+All unit tests must follow the **Arrange, Act, Assert** pattern with explicit section comments:
+
+- **Arrange** — Set up test data, mock servers, and dependencies
+- **Act** — Execute the single operation under test
+- **Assert** — Verify the result matches expectations
+
+```go
+func TestGetUser_Success(t *testing.T) {
+	// Arrange
+	srv := httptest.NewServer(...)
+	defer srv.Close()
+	c := New(srv.URL)
+
+	// Act
+	result, err := c.GetUser("user", "pass")
+
+	// Assert
+	if err != nil { ... }
+	if result.Username != "user" { ... }
+}
+```
+
+## OpenSubsonic specification
+
+This project aims to follow the [OpenSubsonic API specification](https://github.com/opensubsonic/opensubsonic.github.io) for all server communication. When implementing API endpoints, refer to the spec for parameter details, error codes, response formats, and authentication requirements.
