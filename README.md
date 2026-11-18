@@ -49,6 +49,10 @@ nix run .#default -- --help
 nix fmt
 ```
 
+## Contributing
+
+PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/) format. This is enforced by CI since the repo uses squash merging — the PR title becomes the commit on `main`.
+
 ## License
 
 [MIT](LICENSE)
