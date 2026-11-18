@@ -33,6 +33,22 @@ opensubsonic-mpd --server <opensubsonic-url> --username <user> --password <pass>
 
 The server starts listening on port `6600` by default. Connect your favourite MPD client and start playing.
 
+## Nix
+
+### Building
+
+```bash
+nix build .#default
+nix run .#default -- --help
+```
+
+### Formatting
+
+```bash
+# Format all files (Go + Nix)
+nix fmt
+```
+
 ## License
 
 [MIT](LICENSE)
