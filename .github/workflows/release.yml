@@ -1,16 +1,23 @@
 name: Release
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: [ "Build with Nix" ]
+    types: [ completed ]
 
 permissions:
-  contents: read
+  actions: write
+  contents: write
+  pull-requests: write
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    if: >-
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Generate GitHub App token
@@ -39,23 +46,16 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: npx semantic-release
 
-      - name: Get release tag
-        id: tag
-        run: echo "tag=$(git describe --tags --abbrev=0 2>/dev/null || echo none)" >> "$GITHUB_OUTPUT"
-
-      - name: Install Nix
-        if: steps.tag.outputs.tag != 'none'
-        uses: DeterminateSystems/nix-installer-action@main
-
-      - name: Build binary with Nix
-        if: steps.tag.outputs.tag != 'none'
-        run: nix build .#default
+      - name: Download built binary
+        uses: actions/download-artifact@v4
+        with:
+          name: opensubsonic-mpd-Linux
+          github-token: ${{ steps.app-token.outputs.token }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Upload binary to release
-        if: steps.tag.outputs.tag != 'none'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          files: result/bin/opensubsonic-mpd
+          files: opensubsonic-mpd/opensubsonic-mpd
           draft: false
           token: ${{ steps.app-token.outputs.token }}
