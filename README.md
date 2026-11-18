@@ -1,5 +1,9 @@
 # opensubsonic-mpd
 
+> ⚠️ **This project is a work in progress and not yet ready for production use.**
+
+[![Status: Work in Progress](https://img.shields.io/badge/Status-Work_in_Progress-orange)](#)
+
 A headless music player that bridges any [OpenSubsonic](https://github.com/Mromani/opensubsonic) server with MPD clients via [libmpv](https://mpv.io/).
 
 ## What it does
