@@ -38,6 +38,22 @@ When adding Go dependencies (i.e. when `go.mod` acquires entries and `go.sum` is
 4. Update `vendorHash` in `flake.nix` with that value
 5. Commit both `flake.nix` and the updated `flake.lock`
 
+## Formatting
+
+The project uses [`treefmt-nix`](https://github.com/nix-community/treefmt) for unified formatting across both Go and Nix files.
+
+```bash
+# Format all files (Go + Nix)
+nix fmt
+
+# Check formatting (runs automatically via `nix flake check` in CI)
+nix flake check
+```
+
+This runs:
+- **gofmt** — Go code formatting
+- **nixfmt** — Nix code formatting
+
 ## GitHub Actions
 
 A CI workflow builds the project with Nix on push and PR. No secrets or cache setup required for basic operation.
@@ -60,6 +76,15 @@ Version bump rules:
 | `chore`, `docs`, `style`, `refactor`, `test`, `build`, `ci` | none |
 
 The config lives in `.releaserc.json`.
+
+## Branching convention
+
+**Never commit directly to `main` — always use a PR.**
+
+1. Create a feature branch: `git checkout -b feat/<description>`
+2. Make changes and commit with conventional commit messages
+3. Push the branch and open a PR against `main`
+4. CI will run `nix flake check` (build + formatting) on the PR
 
 ## Conventional Commits
 
@@ -87,6 +112,10 @@ Examples:
 - `feat(nix): add buildGoModule package to flake.nix`
 - `fix: handle missing server URL flag`
 - `ci: add GitHub Actions workflow for Nix build`
+
+### PR titles
+
+Since this repo uses squash merging, **PR titles must also follow the Conventional Commits format** (enforced by a CI check). The squash-merged commit — which becomes the official commit on `main` — takes the PR title, so it must be valid.
 
 ## Project overview
 

@@ -19,7 +19,7 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
 
-      - name: Check flake
+      - name: Check flake (build + formatting)
         run: nix flake check
 
       - name: Build Go binary

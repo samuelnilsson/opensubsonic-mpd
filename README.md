@@ -37,6 +37,26 @@ opensubsonic-mpd --server <opensubsonic-url> --username <user> --password <pass>
 
 The server starts listening on port `6600` by default. Connect your favourite MPD client and start playing.
 
+## Nix
+
+### Building
+
+```bash
+nix build .#default
+nix run .#default -- --help
+```
+
+### Formatting
+
+```bash
+# Format all files (Go + Nix)
+nix fmt
+```
+
+## Contributing
+
+PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/) format. This is enforced by CI since the repo uses squash merging — the PR title becomes the commit on `main`.
+
 ## License
 
 [MIT](LICENSE)
