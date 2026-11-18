@@ -66,6 +66,12 @@
 
       checks = forAllSystems (system: {
         formatting = treefmtEval.${system}.config.build.check self;
+        go-test = self.packages.${system}.default.overrideAttrs (old: {
+          doCheck = true;
+          checkPhase = ''
+            go test -v -race ./...
+          '';
+        });
       });
     };
 }
