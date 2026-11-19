@@ -122,7 +122,7 @@ type User struct {
 // GetMusicDirectory calls the /rest/getMusicDirectory endpoint and returns
 // the contents of the specified music directory. Pass an empty string for "id"
 // to get the root directory.
-func (s *Server) GetMusicDirectory(id string) (*DirectoryResult, error) {
+func (s *Server) GetMusicDirectory(id, username, password string) (*DirectoryResult, error) {
 	endpoint := fmt.Sprintf("%s/rest/getMusicDirectory.view", s.BaseURL)
 
 	params := url.Values{}
@@ -130,6 +130,8 @@ func (s *Server) GetMusicDirectory(id string) (*DirectoryResult, error) {
 	params.Set("c", clientName)
 	params.Set("f", "json")
 	params.Set("id", id)
+	params.Set("u", username)
+	params.Set("p", password)
 
 	resp, err := s.HTTP.Get(endpoint + "?" + params.Encode())
 	if err != nil {

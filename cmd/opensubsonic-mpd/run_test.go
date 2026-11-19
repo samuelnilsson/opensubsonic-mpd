@@ -18,7 +18,7 @@ func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, err
 	return f.result, f.err
 }
 
-func (f *fakeRunner) GetMusicDirectory(id string) (*client.DirectoryResult, error) {
+func (f *fakeRunner) GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error) {
 	return &client.DirectoryResult{
 		Directory: &client.Directory{
 			Name: "Music",

@@ -18,7 +18,7 @@ type RunArgs struct {
 // Runner abstracts the client dependency so it can be mocked in tests.
 type Runner interface {
 	GetUser(username, password string) (*client.AuthResult, error)
-	GetMusicDirectory(id string) (*client.DirectoryResult, error)
+	GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error)
 }
 
 // Run executes the core application logic and returns an error on failure.
@@ -49,7 +49,7 @@ func runWith(w io.Writer, args RunArgs, runner Runner) error {
 	}
 
 	// List root directory
-	rootDir, err := runner.GetMusicDirectory("")
+	rootDir, err := runner.GetMusicDirectory("", args.Username, args.Password)
 	if err != nil {
 		fmt.Fprintf(w, "Warning: failed to get root directory: %v\n", err)
 	} else {
