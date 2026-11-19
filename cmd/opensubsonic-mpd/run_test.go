@@ -18,6 +18,18 @@ func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, err
 	return f.result, f.err
 }
 
+func (f *fakeRunner) GetMusicDirectory(id string) (*client.DirectoryResult, error) {
+	return &client.DirectoryResult{
+		Directory: &client.Directory{
+			Name: "Music",
+			Child: []client.Child{
+				{IsDir: true, Title: "Albums"},
+				{IsDir: true, Title: "Artists"},
+			},
+		},
+	}, nil
+}
+
 func TestRun_Success(t *testing.T) {
 	// Arrange
 	args := RunArgs{
@@ -55,6 +67,10 @@ func TestRun_Success(t *testing.T) {
 Server: OpenSubsonic 1.0.0
 API version: 1.16.1
 OpenSubsonic server
+
+Root directory (Music):
+  📁 Albums
+  📁 Artists
 `
 	if buf.String() != expected {
 		t.Errorf("unexpected output:\nexpected:\n%s\n\nactual:\n%s", expected, buf.String())
@@ -96,6 +112,10 @@ func TestRun_Success_NoOpenSubsonic(t *testing.T) {
 	expected := `Authenticated as testuser
 Server: Navidrome 0.50.0
 API version: 1.16.1
+
+Root directory (Music):
+  📁 Albums
+  📁 Artists
 `
 	if buf.String() != expected {
 		t.Errorf("unexpected output:\nexpected:\n%s\n\nactual:\n%s", expected, buf.String())
