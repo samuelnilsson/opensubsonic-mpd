@@ -97,16 +97,16 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) for all commit 
 Types:
 | Type         | When to use                                                                 |
 |--------------|-----------------------------------------------------------------------------|
-| `feat`       | A new feature                                                               |
-| `fix`        | A bug fix                                                                   |
+| `feat`       | A change that produces new, user-facing functionality (triggers a **minor** version bump) |
+| `fix`        | A bug fix (triggers a **patch** version bump)                               |
 | `docs`       | Documentation changes only                                                  |
 | `style`      | Code style changes (formatting, semicolons, etc. — no logic change)         |
 | `refactor`   | Code changes that neither fix a bug nor add a feature                       |
-| `perf`       | Performance improvements                                                    |
+| `perf`       | Performance improvements (triggers a **patch** version bump)                |
 | `test`       | Adding or correcting tests                                                  |
 | `build`      | Build system or dependency changes (e.g. Nix, go.mod)                       |
 | `ci`         | CI pipeline changes                                                         |
-| `chore`      | Other changes that don't modify src or test files                           |
+| `chore`      | Internal changes that don't change user-facing behavior (e.g. adding unused client methods, plumbing) |
 
 Examples:
 - `feat(nix): add buildGoModule package to flake.nix`
@@ -116,6 +116,16 @@ Examples:
 ### PR titles
 
 Since this repo uses squash merging, **PR titles must also follow the Conventional Commits format** (enforced by a CI check). The squash-merged commit — which becomes the official commit on `main` — takes the PR title, so it must be valid.
+
+### Pre-push checklist
+
+Before pushing, run `nix flake check` to ensure the build and formatting pass locally:
+
+```bash
+nix flake check
+```
+
+This catches CI failures early and avoids wasting CI resources on trivial issues.
 
 ## Project overview
 

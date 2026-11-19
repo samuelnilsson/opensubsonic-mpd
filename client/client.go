@@ -119,8 +119,128 @@ type User struct {
 	ShareRole    bool   `json:"shareRole"`
 }
 
+// GetIndexes calls the /rest/getIndexes.view endpoint and returns
+// an indexed structure of all artists. This is useful for browsing
+// the library when getMusicFolders returns no folders (e.g. gonic).
+func (s *Server) GetIndexes(username, password string) (*IndexesResult, error) {
+	endpoint := fmt.Sprintf("%s/rest/getIndexes.view", s.BaseURL)
+
+	params := url.Values{}
+	params.Set("v", apiVersion)
+	params.Set("c", clientName)
+	params.Set("f", "json")
+	params.Set("u", username)
+	params.Set("p", password)
+
+	resp, err := s.HTTP.Get(endpoint + "?" + params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("connection failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned HTTP %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		SubsonicResponse struct {
+			Status        string            `json:"status"`
+			Version       string            `json:"version"`
+			Error         *APIError         `json:"error,omitempty"`
+			IndexesResult *IndexesContainer `json:"indexes,omitempty"`
+			Deleted       int               `json:"deleted,omitempty"`
+		} `json:"subsonic-response"`
+	}
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	if result.SubsonicResponse.Error != nil {
+		e := result.SubsonicResponse.Error
+		return nil, fmt.Errorf("server error %d: %s", e.Code, e.Message)
+	}
+
+	if result.SubsonicResponse.Status != "ok" {
+		return nil, fmt.Errorf("unexpected status: %s", result.SubsonicResponse.Status)
+	}
+
+	indexes := []Index{}
+	if result.SubsonicResponse.IndexesResult != nil {
+		indexes = result.SubsonicResponse.IndexesResult.Index
+	}
+
+	return &IndexesResult{Indexes: indexes, Deleted: result.SubsonicResponse.Deleted}, nil
+}
+
 // APIError represents an error response from the OpenSubsonic API.
 type APIError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+// Index represents an indexed group of artists (e.g. "A" for artists starting with A).
+type Index struct {
+	Name   string   `json:"name"`
+	Artist []Artist `json:"artist"`
+}
+
+// Artist represents an artist in the library.
+type Artist struct {
+	ID             string `json:"id"`
+	Name           string `json:"name"`
+	ArtistImageURL string `json:"artistImageUrl,omitempty"`
+}
+
+// IndexesResult wraps the indexed artist list returned by GetIndexes.
+type IndexesResult struct {
+	Indexes []Index `json:"index"`
+	Deleted int     `json:"deleted,omitempty"`
+}
+
+// IndexesContainer is the nested object returned by gonic's getIndexes endpoint.
+type IndexesContainer struct {
+	LastModified    int64   `json:"lastModified,omitempty"`
+	IgnoredArticles string  `json:"ignoredArticles,omitempty"`
+	Index           []Index `json:"index,omitempty"`
+}
+
+// Child represents a single item within a directory (file or subdirectory).
+type Child struct {
+	ID             string `json:"id"`
+	Parent         string `json:"parent,omitempty"`
+	IsDir          bool   `json:"isDir"`
+	Title          string `json:"title"`
+	Album          string `json:"album,omitempty"`
+	Artist         string `json:"artist,omitempty"`
+	Track          int    `json:"track,omitempty"`
+	Year           int    `json:"year,omitempty"`
+	Genre          string `json:"genre,omitempty"`
+	CoverArt       string `json:"coverArt,omitempty"`
+	Size           int64  `json:"size,omitempty"`
+	ContentType    string `json:"contentType,omitempty"`
+	Suffix         string `json:"suffix,omitempty"`
+	Duration       int    `json:"duration,omitempty"`
+	BitRate        int    `json:"bitRate,omitempty"`
+	Path           string `json:"path,omitempty"`
+	AlbumID        string `json:"albumId,omitempty"`
+	ArtistID       string `json:"artistId,omitempty"`
+	Type           string `json:"type,omitempty"`
+	UserRating     int    `json:"userRating,omitempty"`
+	PlayCount      int    `json:"playCount,omitempty"`
+	DiscNumber     int    `json:"discNumber,omitempty"`
+	Created        string `json:"created,omitempty"`
+	Starred        string `json:"starred,omitempty"`
+	Played         string `json:"played,omitempty"`
+	BookmarkPos    int    `json:"bookmarkPosition,omitempty"`
+	OriginalWidth  int    `json:"originalWidth,omitempty"`
+	OriginalHeight int    `json:"originalHeight,omitempty"`
+	BPM            int    `json:"bpm,omitempty"`
+	MusicBrainzID  string `json:"musicBrainzId,omitempty"`
+	ExplicitStatus string `json:"explicitStatus,omitempty"`
 }

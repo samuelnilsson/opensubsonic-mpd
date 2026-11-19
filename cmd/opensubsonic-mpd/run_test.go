@@ -10,12 +10,12 @@ import (
 
 // fakeRunner implements the Runner interface for testing Run().
 type fakeRunner struct {
-	result *client.AuthResult
-	err    error
+	auth *client.AuthResult
+	err  error
 }
 
 func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, error) {
-	return f.result, f.err
+	return f.auth, f.err
 }
 
 func TestRun_Success(t *testing.T) {
@@ -27,7 +27,7 @@ func TestRun_Success(t *testing.T) {
 	}
 
 	fake := &fakeRunner{
-		result: &client.AuthResult{
+		auth: &client.AuthResult{
 			ServerInfo: client.ServerInfo{
 				Version:       "1.16.1",
 				ServerType:    "OpenSubsonic",
@@ -70,7 +70,7 @@ func TestRun_Success_NoOpenSubsonic(t *testing.T) {
 	}
 
 	fake := &fakeRunner{
-		result: &client.AuthResult{
+		auth: &client.AuthResult{
 			ServerInfo: client.ServerInfo{
 				Version:       "1.16.1",
 				ServerType:    "Navidrome",
