@@ -119,6 +119,56 @@ type User struct {
 	ShareRole    bool   `json:"shareRole"`
 }
 
+// GetMusicFolders calls the /rest/getMusicFolders endpoint and returns
+// all configured top-level music folders.
+func (s *Server) GetMusicFolders() (*MusicFoldersResult, error) {
+	endpoint := fmt.Sprintf("%s/rest/getMusicFolders.view", s.BaseURL)
+
+	params := url.Values{}
+	params.Set("v", apiVersion)
+	params.Set("c", clientName)
+	params.Set("f", "json")
+
+	resp, err := s.HTTP.Get(endpoint + "?" + params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("connection failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned HTTP %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		SubsonicResponse struct {
+			Status       string       `json:"status"`
+			Version      string       `json:"version"`
+			Error        *APIError `json:"error,omitempty"`
+			MusicFolders []MusicFolder `json:"musicFolder,omitempty"`
+		} `json:"subsonic-response"`
+	}
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	if result.SubsonicResponse.Error != nil {
+		e := result.SubsonicResponse.Error
+		return nil, fmt.Errorf("server error %d: %s", e.Code, e.Message)
+	}
+
+	if result.SubsonicResponse.Status != "ok" {
+		return nil, fmt.Errorf("unexpected status: %s", result.SubsonicResponse.Status)
+	}
+
+	return &MusicFoldersResult{Folders: result.SubsonicResponse.MusicFolders}, nil
+}
+
 // GetMusicDirectory calls the /rest/getMusicDirectory endpoint and returns
 // the contents of the specified music directory. Pass an empty string for "id"
 // to get the root directory.
@@ -189,6 +239,19 @@ type Directory struct {
 	Name    string  `json:"name"`
 	Child   []Child `json:"child"`
 }
+
+// MusicFolder represents a top-level music folder configured on the server.
+type MusicFolder struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+// MusicFoldersResult wraps the music folders returned by GetMusicFolders.
+type MusicFoldersResult struct {
+	Folders []MusicFolder `json:"musicFolder"`
+}
+
+// Child represents a single item within a directory (file or subdirectory).
 
 // Child represents a single item within a directory (file or subdirectory).
 type Child struct {

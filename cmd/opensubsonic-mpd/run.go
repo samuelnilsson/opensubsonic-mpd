@@ -18,6 +18,7 @@ type RunArgs struct {
 // Runner abstracts the client dependency so it can be mocked in tests.
 type Runner interface {
 	GetUser(username, password string) (*client.AuthResult, error)
+	GetMusicFolders() (*client.MusicFoldersResult, error)
 	GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error)
 }
 
@@ -49,19 +50,32 @@ func runWith(w io.Writer, args RunArgs, runner Runner) error {
 	}
 
 	// List root directory
-	rootDir, err := runner.GetMusicDirectory("", args.Username, args.Password)
+	folders, err := runner.GetMusicFolders()
 	if err != nil {
-		fmt.Fprintf(w, "Warning: failed to get root directory: %v\n", err)
+		fmt.Fprintf(w, "Warning: failed to get music folders: %v\n", err)
+	} else if len(folders.Folders) == 0 {
+		fmt.Fprintln(w, "Warning: no music folders configured")
 	} else {
-		fmt.Fprintf(w, "\nRoot directory (%s):\n", rootDir.Name)
-		for _, item := range rootDir.Child {
-			indent := ""
-			if item.IsDir {
-				indent = "📁 "
-			} else {
-				indent = "🎵 "
+		folder := folders.Folders[0]
+		fmt.Fprintf(w, "\nMusic folders:\n")
+		for _, f := range folders.Folders {
+			fmt.Fprintf(w, "  [id=%d] %s\n", f.ID, f.Name)
+		}
+
+		rootDir, err := runner.GetMusicDirectory(fmt.Sprintf("%d", folder.ID), args.Username, args.Password)
+		if err != nil {
+			fmt.Fprintf(w, "Warning: failed to get music folder contents: %v\n", err)
+		} else {
+			fmt.Fprintf(w, "\nContents of %q:\n", rootDir.Name)
+			for _, item := range rootDir.Child {
+				indent := ""
+				if item.IsDir {
+					indent = "📁 "
+				} else {
+					indent = "🎵 "
+				}
+				fmt.Fprintf(w, "  %s%s\n", indent, item.Title)
 			}
-			fmt.Fprintf(w, "  %s%s\n", indent, item.Title)
 		}
 	}
 

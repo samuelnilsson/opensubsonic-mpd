@@ -10,12 +10,17 @@ import (
 
 // fakeRunner implements the Runner interface for testing Run().
 type fakeRunner struct {
-	result *client.AuthResult
-	err    error
+	result   *client.AuthResult
+	err      error
+	folders  *client.MusicFoldersResult
 }
 
 func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, error) {
 	return f.result, f.err
+}
+
+func (f *fakeRunner) GetMusicFolders() (*client.MusicFoldersResult, error) {
+	return f.folders, nil
 }
 
 func (f *fakeRunner) GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error) {
@@ -51,6 +56,11 @@ func TestRun_Success(t *testing.T) {
 				Email:    "test@example.com",
 			},
 		},
+		folders: &client.MusicFoldersResult{
+			Folders: []client.MusicFolder{
+				{ID: 1, Name: "Music"},
+			},
+		},
 	}
 
 	var buf bytes.Buffer
@@ -68,7 +78,10 @@ Server: OpenSubsonic 1.0.0
 API version: 1.16.1
 OpenSubsonic server
 
-Root directory (Music):
+Music folders:
+  [id=1] Music
+
+Contents of "Music":
   📁 Albums
   📁 Artists
 `
@@ -97,6 +110,11 @@ func TestRun_Success_NoOpenSubsonic(t *testing.T) {
 				Username: "testuser",
 			},
 		},
+		folders: &client.MusicFoldersResult{
+			Folders: []client.MusicFolder{
+				{ID: 1, Name: "Music"},
+			},
+		},
 	}
 
 	var buf bytes.Buffer
@@ -113,7 +131,10 @@ func TestRun_Success_NoOpenSubsonic(t *testing.T) {
 Server: Navidrome 0.50.0
 API version: 1.16.1
 
-Root directory (Music):
+Music folders:
+  [id=1] Music
+
+Contents of "Music":
   📁 Albums
   📁 Artists
 `
