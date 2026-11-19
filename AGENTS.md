@@ -97,12 +97,12 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) for all commit 
 Types:
 | Type         | When to use                                                                 |
 |--------------|-----------------------------------------------------------------------------|
-| `feat`       | A change that produces new, user-facing functionality (triggers a version bump) |
-| `fix`        | A bug fix                                                                   |
+| `feat`       | A change that produces new, user-facing functionality (triggers a **minor** version bump) |
+| `fix`        | A bug fix (triggers a **patch** version bump)                               |
 | `docs`       | Documentation changes only                                                  |
 | `style`      | Code style changes (formatting, semicolons, etc. — no logic change)         |
 | `refactor`   | Code changes that neither fix a bug nor add a feature                       |
-| `perf`       | Performance improvements                                                    |
+| `perf`       | Performance improvements (triggers a **patch** version bump)                |
 | `test`       | Adding or correcting tests                                                  |
 | `build`      | Build system or dependency changes (e.g. Nix, go.mod)                       |
 | `ci`         | CI pipeline changes                                                         |
