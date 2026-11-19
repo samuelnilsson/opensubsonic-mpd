@@ -19,7 +19,7 @@ type RunArgs struct {
 type Runner interface {
 	GetUser(username, password string) (*client.AuthResult, error)
 	GetMusicFolders(username, password string) (*client.MusicFoldersResult, error)
-	GetIndexes() (*client.IndexesResult, error)
+	GetIndexes(username, password string) (*client.IndexesResult, error)
 	GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error)
 }
 
@@ -56,7 +56,7 @@ func runWith(w io.Writer, args RunArgs, runner Runner) error {
 		fmt.Fprintf(w, "Warning: failed to get music folders: %v\n", err)
 	} else if len(folders.Folders) == 0 {
 		// Some servers (e.g. gonic) don't expose music folders; fall back to indexes
-		indexes, err := runner.GetIndexes()
+		indexes, err := runner.GetIndexes(args.Username, args.Password)
 		if err != nil {
 			fmt.Fprintf(w, "Warning: failed to get indexes: %v\n", err)
 		} else {

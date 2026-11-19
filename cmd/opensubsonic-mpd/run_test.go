@@ -24,7 +24,7 @@ func (f *fakeRunner) GetMusicFolders(username, password string) (*client.MusicFo
 	return f.folders, nil
 }
 
-func (f *fakeRunner) GetIndexes() (*client.IndexesResult, error) {
+func (f *fakeRunner) GetIndexes(username, password string) (*client.IndexesResult, error) {
 	return f.indexes, nil
 }
 

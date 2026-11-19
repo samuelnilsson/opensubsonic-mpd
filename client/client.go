@@ -174,13 +174,15 @@ func (s *Server) GetMusicFolders(username, password string) (*MusicFoldersResult
 // GetIndexes calls the /rest/getIndexes.view endpoint and returns
 // an indexed structure of all artists. This is useful for browsing
 // the library when getMusicFolders returns no folders (e.g. gonic).
-func (s *Server) GetIndexes() (*IndexesResult, error) {
+func (s *Server) GetIndexes(username, password string) (*IndexesResult, error) {
 	endpoint := fmt.Sprintf("%s/rest/getIndexes.view", s.BaseURL)
 
 	params := url.Values{}
 	params.Set("v", apiVersion)
 	params.Set("c", clientName)
 	params.Set("f", "json")
+	params.Set("u", username)
+	params.Set("p", password)
 
 	resp, err := s.HTTP.Get(endpoint + "?" + params.Encode())
 	if err != nil {
