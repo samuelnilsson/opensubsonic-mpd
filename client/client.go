@@ -171,6 +171,58 @@ func (s *Server) GetMusicFolders(username, password string) (*MusicFoldersResult
 	return &MusicFoldersResult{Folders: result.SubsonicResponse.MusicFolders}, nil
 }
 
+// GetIndexes calls the /rest/getIndexes.view endpoint and returns
+// an indexed structure of all artists. This is useful for browsing
+// the library when getMusicFolders returns no folders (e.g. gonic).
+func (s *Server) GetIndexes() (*IndexesResult, error) {
+	endpoint := fmt.Sprintf("%s/rest/getIndexes.view", s.BaseURL)
+
+	params := url.Values{}
+	params.Set("v", apiVersion)
+	params.Set("c", clientName)
+	params.Set("f", "json")
+
+	resp, err := s.HTTP.Get(endpoint + "?" + params.Encode())
+	if err != nil {
+		return nil, fmt.Errorf("connection failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned HTTP %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		SubsonicResponse struct {
+			Status   string  `json:"status"`
+			Version  string  `json:"version"`
+			Error    *APIError `json:"error,omitempty"`
+			Indexes  []Index `json:"index,omitempty"`
+			Deleted  int     `json:"deleted,omitempty"`
+		} `json:"subsonic-response"`
+	}
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	if result.SubsonicResponse.Error != nil {
+		e := result.SubsonicResponse.Error
+		return nil, fmt.Errorf("server error %d: %s", e.Code, e.Message)
+	}
+
+	if result.SubsonicResponse.Status != "ok" {
+		return nil, fmt.Errorf("unexpected status: %s", result.SubsonicResponse.Status)
+	}
+
+	return &IndexesResult{Indexes: result.SubsonicResponse.Indexes, Deleted: result.SubsonicResponse.Deleted}, nil
+}
+
 // GetMusicDirectory calls the /rest/getMusicDirectory endpoint and returns
 // the contents of the specified music directory. Pass an empty string for "id"
 // to get the root directory.
@@ -251,6 +303,26 @@ type MusicFolder struct {
 // MusicFoldersResult wraps the music folders returned by GetMusicFolders.
 type MusicFoldersResult struct {
 	Folders []MusicFolder `json:"musicFolder"`
+}
+
+// Index represents an indexed group of artists (e.g. "A" for artists starting with A).
+type Index struct {
+	Name   string  `json:"name"`
+	Artist []Artist `json:"artist"`
+	LastModified int64 `json:"lastModified,omitempty"`
+}
+
+// Artist represents an artist in the library.
+type Artist struct {
+	ID            string `json:"id"`
+	Name          string `json:"name"`
+	ArtistImageURL string `json:"artistImageUrl,omitempty"`
+}
+
+// IndexesResult wraps the indexed artist list returned by GetIndexes.
+type IndexesResult struct {
+	Indexes []Index `json:"index"`
+	Deleted int     `json:"deleted,omitempty"`
 }
 
 // Child represents a single item within a directory (file or subdirectory).

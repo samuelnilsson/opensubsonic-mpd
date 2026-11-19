@@ -19,6 +19,7 @@ type RunArgs struct {
 type Runner interface {
 	GetUser(username, password string) (*client.AuthResult, error)
 	GetMusicFolders(username, password string) (*client.MusicFoldersResult, error)
+	GetIndexes() (*client.IndexesResult, error)
 	GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error)
 }
 
@@ -49,12 +50,35 @@ func runWith(w io.Writer, args RunArgs, runner Runner) error {
 		fmt.Fprintln(w, "OpenSubsonic server")
 	}
 
-	// List root directory
+	// List music folders or indexes (for servers like gonic)
 	folders, err := runner.GetMusicFolders(args.Username, args.Password)
 	if err != nil {
 		fmt.Fprintf(w, "Warning: failed to get music folders: %v\n", err)
 	} else if len(folders.Folders) == 0 {
-		fmt.Fprintln(w, "Warning: no music folders configured")
+		// Some servers (e.g. gonic) don't expose music folders; fall back to indexes
+		indexes, err := runner.GetIndexes()
+		if err != nil {
+			fmt.Fprintf(w, "Warning: failed to get indexes: %v\n", err)
+		} else {
+			fmt.Fprintln(w, "\nMusic library (by artist):")
+			for _, idx := range indexes.Indexes {
+				fmt.Fprintf(w, "  [%s]\n", idx.Name)
+				count := 0
+				for _, a := range idx.Artist {
+					fmt.Fprintf(w, "    %s\n", a.Name)
+					count++
+				}
+				if count == 0 {
+					fmt.Fprintln(w, "    (empty)")
+				}
+			}
+			if len(indexes.Indexes) == 0 {
+				fmt.Fprintln(w, "  (empty library)")
+			}
+			if indexes.Deleted > 0 {
+				fmt.Fprintf(w, "\nRemoved: %d artist(s)\n", indexes.Deleted)
+			}
+		}
 	} else {
 		folder := folders.Folders[0]
 		fmt.Fprintf(w, "\nMusic folders:\n")

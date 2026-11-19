@@ -10,9 +10,10 @@ import (
 
 // fakeRunner implements the Runner interface for testing Run().
 type fakeRunner struct {
-	result   *client.AuthResult
-	err      error
-	folders  *client.MusicFoldersResult
+	result    *client.AuthResult
+	err       error
+	folders   *client.MusicFoldersResult
+	indexes   *client.IndexesResult
 }
 
 func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, error) {
@@ -21,6 +22,10 @@ func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, err
 
 func (f *fakeRunner) GetMusicFolders(username, password string) (*client.MusicFoldersResult, error) {
 	return f.folders, nil
+}
+
+func (f *fakeRunner) GetIndexes() (*client.IndexesResult, error) {
+	return f.indexes, nil
 }
 
 func (f *fakeRunner) GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error) {
