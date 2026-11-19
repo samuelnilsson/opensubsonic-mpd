@@ -97,7 +97,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) for all commit 
 Types:
 | Type         | When to use                                                                 |
 |--------------|-----------------------------------------------------------------------------|
-| `feat`       | A new feature                                                               |
+| `feat`       | A change that produces new, user-facing functionality (triggers a version bump) |
 | `fix`        | A bug fix                                                                   |
 | `docs`       | Documentation changes only                                                  |
 | `style`      | Code style changes (formatting, semicolons, etc. — no logic change)         |
@@ -106,7 +106,7 @@ Types:
 | `test`       | Adding or correcting tests                                                  |
 | `build`      | Build system or dependency changes (e.g. Nix, go.mod)                       |
 | `ci`         | CI pipeline changes                                                         |
-| `chore`      | Other changes that don't modify src or test files                           |
+| `chore`      | Internal changes that don't change user-facing behavior (e.g. adding unused client methods, plumbing) |
 
 Examples:
 - `feat(nix): add buildGoModule package to flake.nix`
