@@ -10,34 +10,12 @@ import (
 
 // fakeRunner implements the Runner interface for testing Run().
 type fakeRunner struct {
-	result    *client.AuthResult
-	err       error
-	folders   *client.MusicFoldersResult
-	indexes   *client.IndexesResult
+	auth *client.AuthResult
+	err  error
 }
 
 func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, error) {
-	return f.result, f.err
-}
-
-func (f *fakeRunner) GetMusicFolders(username, password string) (*client.MusicFoldersResult, error) {
-	return f.folders, nil
-}
-
-func (f *fakeRunner) GetIndexes(username, password string) (*client.IndexesResult, error) {
-	return f.indexes, nil
-}
-
-func (f *fakeRunner) GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error) {
-	return &client.DirectoryResult{
-		Directory: &client.Directory{
-			Name: "Music",
-			Child: []client.Child{
-				{IsDir: true, Title: "Albums"},
-				{IsDir: true, Title: "Artists"},
-			},
-		},
-	}, nil
+	return f.auth, f.err
 }
 
 func TestRun_Success(t *testing.T) {
@@ -49,7 +27,7 @@ func TestRun_Success(t *testing.T) {
 	}
 
 	fake := &fakeRunner{
-		result: &client.AuthResult{
+		auth: &client.AuthResult{
 			ServerInfo: client.ServerInfo{
 				Version:       "1.16.1",
 				ServerType:    "OpenSubsonic",
@@ -59,11 +37,6 @@ func TestRun_Success(t *testing.T) {
 			User: &client.User{
 				Username: "testuser",
 				Email:    "test@example.com",
-			},
-		},
-		folders: &client.MusicFoldersResult{
-			Folders: []client.MusicFolder{
-				{ID: 1, Name: "Music"},
 			},
 		},
 	}
@@ -82,13 +55,6 @@ func TestRun_Success(t *testing.T) {
 Server: OpenSubsonic 1.0.0
 API version: 1.16.1
 OpenSubsonic server
-
-Music folders:
-  [id=1] Music
-
-Contents of "Music":
-  📁 Albums
-  📁 Artists
 `
 	if buf.String() != expected {
 		t.Errorf("unexpected output:\nexpected:\n%s\n\nactual:\n%s", expected, buf.String())
@@ -104,7 +70,7 @@ func TestRun_Success_NoOpenSubsonic(t *testing.T) {
 	}
 
 	fake := &fakeRunner{
-		result: &client.AuthResult{
+		auth: &client.AuthResult{
 			ServerInfo: client.ServerInfo{
 				Version:       "1.16.1",
 				ServerType:    "Navidrome",
@@ -113,11 +79,6 @@ func TestRun_Success_NoOpenSubsonic(t *testing.T) {
 			},
 			User: &client.User{
 				Username: "testuser",
-			},
-		},
-		folders: &client.MusicFoldersResult{
-			Folders: []client.MusicFolder{
-				{ID: 1, Name: "Music"},
 			},
 		},
 	}
@@ -135,13 +96,6 @@ func TestRun_Success_NoOpenSubsonic(t *testing.T) {
 	expected := `Authenticated as testuser
 Server: Navidrome 0.50.0
 API version: 1.16.1
-
-Music folders:
-  [id=1] Music
-
-Contents of "Music":
-  📁 Albums
-  📁 Artists
 `
 	if buf.String() != expected {
 		t.Errorf("unexpected output:\nexpected:\n%s\n\nactual:\n%s", expected, buf.String())
