@@ -149,11 +149,11 @@ func (s *Server) GetIndexes(username, password string) (*IndexesResult, error) {
 
 	var result struct {
 		SubsonicResponse struct {
-			Status        string          `json:"status"`
-			Version       string          `json:"version"`
-			Error         *APIError       `json:"error,omitempty"`
+			Status        string            `json:"status"`
+			Version       string            `json:"version"`
+			Error         *APIError         `json:"error,omitempty"`
 			IndexesResult *IndexesContainer `json:"indexes,omitempty"`
-			Deleted       int             `json:"deleted,omitempty"`
+			Deleted       int               `json:"deleted,omitempty"`
 		} `json:"subsonic-response"`
 	}
 
@@ -192,8 +192,8 @@ type Index struct {
 
 // Artist represents an artist in the library.
 type Artist struct {
-	ID            string `json:"id"`
-	Name          string `json:"name"`
+	ID             string `json:"id"`
+	Name           string `json:"name"`
 	ArtistImageURL string `json:"artistImageUrl,omitempty"`
 }
 
@@ -212,35 +212,35 @@ type IndexesContainer struct {
 
 // Child represents a single item within a directory (file or subdirectory).
 type Child struct {
-	ID              string  `json:"id"`
-	Parent          string  `json:"parent,omitempty"`
-	IsDir           bool    `json:"isDir"`
-	Title           string  `json:"title"`
-	Album           string  `json:"album,omitempty"`
-	Artist          string  `json:"artist,omitempty"`
-	Track           int     `json:"track,omitempty"`
-	Year            int     `json:"year,omitempty"`
-	Genre           string  `json:"genre,omitempty"`
-	CoverArt        string  `json:"coverArt,omitempty"`
-	Size            int64   `json:"size,omitempty"`
-	ContentType     string  `json:"contentType,omitempty"`
-	Suffix          string  `json:"suffix,omitempty"`
-	Duration        int     `json:"duration,omitempty"`
-	BitRate         int     `json:"bitRate,omitempty"`
-	Path            string  `json:"path,omitempty"`
-	AlbumID         string  `json:"albumId,omitempty"`
-	ArtistID        string  `json:"artistId,omitempty"`
-	Type            string  `json:"type,omitempty"`
-	UserRating      int     `json:"userRating,omitempty"`
-	PlayCount       int     `json:"playCount,omitempty"`
-	DiscNumber      int     `json:"discNumber,omitempty"`
-	Created         string  `json:"created,omitempty"`
-	Starred         string  `json:"starred,omitempty"`
-	Played          string  `json:"played,omitempty"`
-	BookmarkPos     int     `json:"bookmarkPosition,omitempty"`
-	OriginalWidth   int     `json:"originalWidth,omitempty"`
-	OriginalHeight  int     `json:"originalHeight,omitempty"`
-	BPM             int     `json:"bpm,omitempty"`
-	MusicBrainzID   string  `json:"musicBrainzId,omitempty"`
-	ExplicitStatus  string  `json:"explicitStatus,omitempty"`
+	ID             string `json:"id"`
+	Parent         string `json:"parent,omitempty"`
+	IsDir          bool   `json:"isDir"`
+	Title          string `json:"title"`
+	Album          string `json:"album,omitempty"`
+	Artist         string `json:"artist,omitempty"`
+	Track          int    `json:"track,omitempty"`
+	Year           int    `json:"year,omitempty"`
+	Genre          string `json:"genre,omitempty"`
+	CoverArt       string `json:"coverArt,omitempty"`
+	Size           int64  `json:"size,omitempty"`
+	ContentType    string `json:"contentType,omitempty"`
+	Suffix         string `json:"suffix,omitempty"`
+	Duration       int    `json:"duration,omitempty"`
+	BitRate        int    `json:"bitRate,omitempty"`
+	Path           string `json:"path,omitempty"`
+	AlbumID        string `json:"albumId,omitempty"`
+	ArtistID       string `json:"artistId,omitempty"`
+	Type           string `json:"type,omitempty"`
+	UserRating     int    `json:"userRating,omitempty"`
+	PlayCount      int    `json:"playCount,omitempty"`
+	DiscNumber     int    `json:"discNumber,omitempty"`
+	Created        string `json:"created,omitempty"`
+	Starred        string `json:"starred,omitempty"`
+	Played         string `json:"played,omitempty"`
+	BookmarkPos    int    `json:"bookmarkPosition,omitempty"`
+	OriginalWidth  int    `json:"originalWidth,omitempty"`
+	OriginalHeight int    `json:"originalHeight,omitempty"`
+	BPM            int    `json:"bpm,omitempty"`
+	MusicBrainzID  string `json:"musicBrainzId,omitempty"`
+	ExplicitStatus string `json:"explicitStatus,omitempty"`
 }
