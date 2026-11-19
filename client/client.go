@@ -121,13 +121,15 @@ type User struct {
 
 // GetMusicFolders calls the /rest/getMusicFolders endpoint and returns
 // all configured top-level music folders.
-func (s *Server) GetMusicFolders() (*MusicFoldersResult, error) {
+func (s *Server) GetMusicFolders(username, password string) (*MusicFoldersResult, error) {
 	endpoint := fmt.Sprintf("%s/rest/getMusicFolders.view", s.BaseURL)
 
 	params := url.Values{}
 	params.Set("v", apiVersion)
 	params.Set("c", clientName)
 	params.Set("f", "json")
+	params.Set("u", username)
+	params.Set("p", password)
 
 	resp, err := s.HTTP.Get(endpoint + "?" + params.Encode())
 	if err != nil {

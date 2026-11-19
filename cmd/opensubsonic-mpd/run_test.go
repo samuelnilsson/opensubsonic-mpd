@@ -19,7 +19,7 @@ func (f *fakeRunner) GetUser(username, password string) (*client.AuthResult, err
 	return f.result, f.err
 }
 
-func (f *fakeRunner) GetMusicFolders() (*client.MusicFoldersResult, error) {
+func (f *fakeRunner) GetMusicFolders(username, password string) (*client.MusicFoldersResult, error) {
 	return f.folders, nil
 }
 

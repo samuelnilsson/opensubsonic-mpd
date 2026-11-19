@@ -18,7 +18,7 @@ type RunArgs struct {
 // Runner abstracts the client dependency so it can be mocked in tests.
 type Runner interface {
 	GetUser(username, password string) (*client.AuthResult, error)
-	GetMusicFolders() (*client.MusicFoldersResult, error)
+	GetMusicFolders(username, password string) (*client.MusicFoldersResult, error)
 	GetMusicDirectory(id, username, password string) (*client.DirectoryResult, error)
 }
 
@@ -50,7 +50,7 @@ func runWith(w io.Writer, args RunArgs, runner Runner) error {
 	}
 
 	// List root directory
-	folders, err := runner.GetMusicFolders()
+	folders, err := runner.GetMusicFolders(args.Username, args.Password)
 	if err != nil {
 		fmt.Fprintf(w, "Warning: failed to get music folders: %v\n", err)
 	} else if len(folders.Folders) == 0 {
