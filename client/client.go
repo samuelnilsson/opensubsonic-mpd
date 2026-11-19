@@ -222,6 +222,9 @@ func (s *Server) GetIndexes(username, password string) (*IndexesResult, error) {
 		return nil, fmt.Errorf("unexpected status: %s", result.SubsonicResponse.Status)
 	}
 
+	// DEBUG: log raw response for troubleshooting
+	fmt.Printf("[DEBUG] GetIndexes raw: %s\n", string(body))
+
 	return &IndexesResult{Indexes: result.SubsonicResponse.Indexes, Deleted: result.SubsonicResponse.Deleted}, nil
 }
 
